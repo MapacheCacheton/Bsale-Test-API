@@ -1,0 +1,4 @@
+# Se xxcluye carpeta node_modules
+node_modules/
+# Se excluyen archivos .env
+.env
