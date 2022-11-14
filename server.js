@@ -1,8 +1,8 @@
 import { port , root} from './config.js'
 import express from 'express'
+import cors from 'cors'
 
 // Routes
-import mainRoutes from './routes/main.js'
 import productRoutes from './routes/products.js'
 
 // Server
@@ -12,14 +12,16 @@ const app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
+// CORS
+app.use(cors())
+
 // App Routes
-// app.use(mainRoutes)
 app.use('/api/products',productRoutes)
 
 // 404 Page
-// app.get("*", (req, res) => {
-//     res.render('404', { title: 'Oh no! a 404 :(' })
-// })
+app.get("*", (req, res) => {
+    res.status(404).send('Missing endpoint')
+})
 
 // Server Running
-app.listen(port, _ => console.log(`Server Running at: http://localhost:${port}/`))
+app.listen(port, _ => console.log(`Server Running at: http://localhost:${port}/api/products`))

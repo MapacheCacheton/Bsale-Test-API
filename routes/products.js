@@ -11,10 +11,11 @@ const router = express.Router()
 // Routes
 router.get('/', (req, res) => {
     const {order, by} = req.query //order = ASC or DESC ----- by = name, price, discount
-    const {page} = (req.query.page) ? req.query.page : 1 
+    const page = (req.query.page) ? Number(req.query.page) : 1 
+    
     const order_by = (order && by) ? `ORDER BY p.${by} ${order}` : ''
     const offset = (page > 1) ? ((page-1) * 20) : 0
-    console.log(order, by, offset);
+
     const query = {
         sql: `SELECT p.id, p.name, url_image, price, discount, c.name AS 'category' FROM product AS p, category AS c WHERE p.category = c.id ${order_by} LIMIT 20 OFFSET ? ;`,
         values: [offset]
@@ -25,11 +26,11 @@ router.get('/', (req, res) => {
         if(rows.length > 0){
             res.status(200).send({products: rows})
         }
-        else res.status(404).send('No se encontraron registros')
+        else res.status(404).send({error:'No se encontraron registros'})
     })
 })
 
-router.get('/:category', (req, res) =>{
+router.get('/category/:category', (req, res) =>{
     const {order, by} = req.query //order = ASC or DESC ----- by = name, price, discount
     const category = req.params.category
     const page = (req.query.page) ? req.query.page : 1 
@@ -43,11 +44,31 @@ router.get('/:category', (req, res) =>{
     }
     connection.query(query, (err, rows) => {
         if(err) throw err
-        console.log(rows);
         if(rows.length > 0){
             res.status(200).send({products: rows})
         }
-        else res.status(404).send('No se encontraron registros')
+        else res.status(404).send({error:'No se encontraron registros'})
+    })
+})
+
+router.get('/search/:name', (req, res) => {
+    const {order, by} = req.query //order = ASC or DESC ----- by = name, price, discount
+    const name = req.params.name.toLocaleUpperCase()
+    const page = (req.query.page) ? req.query.page : 1 
+
+    const order_by = (order && by) ? `ORDER BY p.${by} ${order}` : ''
+    const offset = (page > 1) ? ((page-1) * 20) : 0
+
+    const query = {
+        sql: `SELECT p.id, p.name, url_image, price, discount, c.name AS 'category' FROM product AS p, category AS c WHERE p.category = c.id AND p.name LIKE ? ${order_by} LIMIT 20 OFFSET ?`,
+        values: [`%${name}%`,offset]
+    }
+    connection.query(query, (err, rows) => {
+        if(err) throw err
+        if(rows.length > 0){
+            res.status(200).send({products: rows})
+        }
+        else res.status(404).send({error:'No se encontraron registros'})
     })
 })
 
