@@ -21,6 +21,7 @@
     "express-handlebars": "^6.0.5",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.15",
-    "pg": "^8.7.3"
+    "pg": "^8.7.3",
+    "serverless-http": "^3.1.0"
   }
 }

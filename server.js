@@ -24,4 +24,4 @@ app.get("*", (req, res) => {
 })
 
 // Server Running
-app.listen(port, _ => console.log(`Server Running at: http://localhost:${port}/api/products`))
+app.listen(port, _ => {})
